@@ -1,6 +1,8 @@
 /*
  * sys.c - Syscalls implementation
  */
+#include "libc.h"
+#include "types.h"
 #include <devices.h>
 #include <utils.h>
 #include <io.h>
@@ -159,4 +161,42 @@ int sys_get_stats(int pid, struct stats *st) {
         }
     }
     return ESRCH; // No such process
+}
+
+void sys_show_memory(int type) {
+    int init_page, pag, offset;
+    page_table_entry *PT = get_PT(current());
+
+    char buffer[8] = "\0\0\0\0\0\0\0\0";
+
+
+    printk("------- CODE SEGMENT ------\n");
+
+    init_page = PAG_LOG_INIT_CODE;
+    offset = 0;
+    for (pag = 0; pag < NUM_PAG_CODE; ++pag) {
+        offset = init_page+pag;
+        itoa(offset, buffer); // logic address
+        printk(buffer);
+        printk(" --- ");
+        itoa((int)PT[offset].bits.pbase_addr, buffer); // logic address
+        printk(buffer);
+        printk("\n");
+    }
+
+    if (type == 0xC0DE) return;
+
+    printk("------- DATA SEGMENT ------\n");
+
+    init_page = PAG_LOG_INIT_DATA;
+
+    for (pag = 0; pag < NUM_PAG_DATA; ++pag) {
+        offset = init_page+pag;
+        itoa(offset, buffer); // logic address
+        printk(buffer);
+        printk(" --- ");
+        itoa((int)PT[offset].bits.pbase_addr, buffer); // logic address
+        printk(buffer);
+        printk("\n");
+    }
 }

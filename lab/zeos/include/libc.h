@@ -26,6 +26,6 @@ void exit();
 
 int get_stats(int pid, struct stats *st);
 
-int get_stats(int pid, struct stats *st);
+void show_memory(int type);
 
 #endif  /* __LIBC_H__ */

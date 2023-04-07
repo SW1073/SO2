@@ -235,23 +235,13 @@ ENTRY (show_memory)
     pushl %ecx
 
     // Parameter passing through registers
-    mov 8(%ebp), %ebx       // first param : pid -> ebx
+    mov 8(%ebp), %ebx       // first param : type -> ebx
     
     // Put the identifier of the system call in the EAX register
-    // mov $35, %eax           // 35 is get_stats()
-
-    // Store the return address to user mode in the user stack
-    pushl $get_stats_return_user
-
-    // Create a fake dynamic link
-    pushl %ebp
-    mov %esp, %ebp
+    mov $3, %eax
 
     // Enter the system
-    sysenter
-
-    // After this the return value of the syscall will be in eax.
-get_stats_return_user:
+    int $0x82
 
     // if eax<0 -> neg eax, save eax to errno and return -1
     // else return eax
@@ -263,12 +253,7 @@ get_stats_return_user:
     movl %eax, errno
     mov $-1, %eax
 
-get_stats_fin:
-    // Pop our ebp
-    popl %ebp
-    
-    // Skip the return address we pushed
-    add $4, %esp    // quitar @return
+sh_mem_fin:
 
     // Pop both ecx and edx, in inverse order to the pushing one
     popl %ecx

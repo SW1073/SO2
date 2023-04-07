@@ -114,17 +114,8 @@ fin:
 
 ENTRY(system_call_handler_examen)
     SAVE_ALL // Save the current context
-    //cmpl $0, %eax // Is syscall number negative?
-    //jl err // If it is, jump to return an error
-    //cmpl $MAX_SYSCALL, %eax // Is syscall greater than MAX_SYSCALL?
-    //jg err // If it is, jump to return an error
-    //call *sys_call_table(, %eax, 0x04) // Call the corresponding service routine
-    call sys_show_memory
+    call *sys_call_table(, %eax, 0x04) // Call the corresponding service routine
     jmp fin // Finish
-err:
-    movl $0xFFFFFFD6, %eax // Move to EAX the ENOSYS error
-
-fin:
     movl %eax, 0x18(%esp) // Change the EAX value in the stack
     RESTORE_ALL // Restore the context
     iret

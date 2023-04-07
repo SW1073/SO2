@@ -61,6 +61,10 @@ int __attribute__ ((__section__(".text.main")))
         write(1, "W\n", 2);
     }
 
+    show_memory(0);
+
+    exit();
+
     // Test or sum
     int ret = fork();
     if ( ret== 0 ) {
