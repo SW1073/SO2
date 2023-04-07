@@ -21,6 +21,10 @@ ENTRY(get_ebp)
     movl %ebp, %eax
     ret
 
+ENTRY(get_cr2)
+    movl %cr2, %eax
+    ret
+
 ENTRY(set_esp_and_switch)
     movl 4(%esp), %esp
     popl %ebp

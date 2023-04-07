@@ -61,9 +61,7 @@ int __attribute__ ((__section__(".text.main")))
         write(1, "W\n", 2);
     }
 
-    show_memory(0);
-
-    exit();
+    show_memory(0xC0DE);
 
     // Test or sum
     int ret = fork();
@@ -90,6 +88,7 @@ int __attribute__ ((__section__(".text.main")))
                                 ret = fork();
                                 if (ret == 0) {
                                     write_msg_n_num("Soy el hijo. PID: ", getpid());
+                                    trigger_page_fault();
                                     ret = fork();
                                     if (ret == 0) {
                                         write_msg_n_num("Soy el hijo. PID: ", getpid());
@@ -103,7 +102,7 @@ int __attribute__ ((__section__(".text.main")))
             }else if (ret == -1) { perror(); }
         }else if (ret == -1) { perror(); }
     }else if (ret == -1) { perror(); }  
-    
+
     struct stats st1, st2, st3;
 
     while (gettime() < 1003);

@@ -243,18 +243,6 @@ ENTRY (show_memory)
     // Enter the system
     int $0x82
 
-    // if eax<0 -> neg eax, save eax to errno and return -1
-    // else return eax
-    cmpl $0, %eax
-    jge get_stats_fin
-
-    // save -eax to errno
-    neg %eax
-    movl %eax, errno
-    mov $-1, %eax
-
-sh_mem_fin:
-
     // Pop both ecx and edx, in inverse order to the pushing one
     popl %ecx
     popl %edx

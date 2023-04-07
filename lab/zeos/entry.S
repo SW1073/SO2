@@ -115,8 +115,6 @@ fin:
 ENTRY(system_call_handler_examen)
     SAVE_ALL // Save the current context
     call *sys_call_table(, %eax, 0x04) // Call the corresponding service routine
-    jmp fin // Finish
-    movl %eax, 0x18(%esp) // Change the EAX value in the stack
     RESTORE_ALL // Restore the context
     iret
 

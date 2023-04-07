@@ -2,6 +2,7 @@
  * interrupt.c -
  */
 
+#include "include/mm.h"
 #include <entry.h>
 #include <libc.h>
 #include <types.h>
@@ -124,12 +125,39 @@ void keyboard_routine () {
 
 
 void pf_routine(int error_code, int eip) {
-    char *error_msg = "\nProcess generates a PAGE FAULT exception at EIP: @";
-    char itoa_eip[30];
-    itoa(eip, itoa_eip);
-    printk(error_msg);
-    printk(itoa_eip);
-    while(1);
+    // char *error_msg = "\nProcess generates a PAGE FAULT exception at EIP: @";
+    char pid_buff[10];
+    char eip_buff[10];
+    char cr2_buff[10];
+
+    itoa(current()->PID, pid_buff);
+    itoa(eip, eip_buff);
+    itoa((int)get_cr2(), cr2_buff);
+
+    char *error_msg_1 = "\n Process [";
+    char *error_msg_2 = "] has generated a SEGFAULT when executing [";
+    char *error_msg_3 = "] instruction accessing [";
+    char *error_msg_4 = "] address.\n-- killed --\n";
+    printk(error_msg_1); 
+    printk(pid_buff);
+    printk(error_msg_2); 
+    printk(eip_buff);
+    printk(error_msg_3); 
+    printk(cr2_buff);
+    printk(error_msg_4); 
+
+    // literalmente un exit
+    struct task_struct* current_proc = current();
+    // page_table_entry* current_proc_pt = get_PT(current_proc);
+
+    // Free user pages
+    free_user_pages(current_proc);
+    // Free pcb
+    list_add_tail(&current_proc->list, &freequeue);
+
+    // Let rr decide next proc to execute
+    // This function will not return
+    sched_next_rr();
 }
 
 void clock_routine(void) {
