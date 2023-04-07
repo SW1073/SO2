@@ -6,6 +6,7 @@
 #define __ENTRY_H__
 
 void system_call_handler();
+void system_call_handler_examen();
 void syscall_handler_sysenter();
 
 void keyboard_handler();
