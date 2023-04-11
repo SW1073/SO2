@@ -179,7 +179,7 @@ void sys_show_memory(int type) {
         itoa(offset, buffer); // logic address
         printk(buffer);
         printk(" --- ");
-        itoa((int)PT[offset].bits.pbase_addr, buffer); // logic address
+        itoa((int)PT[offset].bits.pbase_addr, buffer); // physical address
         printk(buffer);
         printk("\n");
     }

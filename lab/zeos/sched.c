@@ -205,17 +205,17 @@ void inner_task_switch(union task_union *new) {
     // Cambiamos la entrada que toca del MSR, para
     // las correctas entradas a modo sistema.
     writeMSR(0x175, 0, tss.esp0);
-    // Flush de TLB para que las traducciones de las @
-    // fisicas a logicas tengan que ser recalculadas
-    // (de lo contrario, usariamos el espacio de memoria
-    // del proceso anterior)
-    set_cr3(get_DIR((struct task_struct*)new));
     // Hacemos que el puntero al kernel_esp del proceso actual
     // apunte al nuevo proceso, desde este momento, 
     // +-----------------+
     // | current() = new |
     // +-----------------+
     current()->kernel_esp = get_ebp();
+    // Flush de TLB para que las traducciones de las @
+    // fisicas a logicas tengan que ser recalculadas
+    // (de lo contrario, usariamos el espacio de memoria
+    // del proceso anterior)
+    set_cr3(get_DIR((struct task_struct*)new));
     // Damos valor al registro esp con el puntero a la pila
     // del nuevo proceso, y devolvemos, poniendo a ejecutar
     // la @ de retorno de la nueva pila de sistema.
