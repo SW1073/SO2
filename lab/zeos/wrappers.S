@@ -222,3 +222,82 @@ get_stats_fin:
 
     // Return to the caller
     ret
+
+ENTRY (block)
+    pushl %ebp
+    movl %esp, %ebp
+
+    movl $16, %eax // id de la syscall getpid() -> 20
+
+    pushl %ebx
+    pushl %edx
+    pushl %ecx
+
+    movl 8(%ebp), %ebx
+
+    pushl $bl_return_user // @ a la que sysenter debe devolver
+    pushl %ebp              // el ebp actual, que debera usarse al volver
+    movl %esp, %ebp
+
+    sysenter                // saltamos a la vigesima entrada de la sys_call_table
+bl_return_user:
+    popl %ebp
+    add $4, %esp // pop of return address. 
+
+    popl %ecx
+    popl %edx
+    popl %ebx
+
+    cmpl $0, %eax
+    jge bl_no_err
+
+    // Ha habido un error.
+    // Devolvemos -1 y ponemos el
+    // codigo de error en errno
+    neg %eax
+    movl %eax, errno
+    mov $-1, %eax
+
+bl_no_err:
+    leave
+    ret
+
+ENTRY (unblock)
+    pushl %ebp
+    movl %esp, %ebp
+
+    pushl %ebx
+    pushl %edx
+    pushl %ecx
+
+    movl 8(%ebp), %ebx
+
+    movl $17, %eax // id de la syscall getpid() -> 17
+
+    pushl $unbl_return_user // @ a la que sysenter debe devolver
+    pushl %ebp              // el ebp actual, que debera usarse al volver
+    movl %esp, %ebp
+
+    sysenter                // saltamos a la vigesima entrada de la sys_call_table
+unbl_return_user:
+    popl %ebp
+    add $4, %esp // pop of return address. 
+
+    popl %ecx
+    popl %edx
+    popl %ebx
+
+    cmpl $0, %eax
+    jge unbl_no_err
+
+    // Ha habido un error.
+    // Devolvemos -1 y ponemos el
+    // codigo de error en errno
+    neg %eax
+    movl %eax, errno
+    mov $-1, %eax
+
+unbl_no_err:
+    leave
+    ret
+

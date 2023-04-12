@@ -1,6 +1,7 @@
 /*
  * sys.c - Syscalls implementation
  */
+#include "list.h"
 #include <devices.h>
 #include <utils.h>
 #include <io.h>
@@ -159,4 +160,37 @@ int sys_get_stats(int pid, struct stats *st) {
         }
     }
     return ESRCH; // No such process
+}
+
+int sys_block(int pid) {
+    int p = 0;
+    for (int i = 0; i < NR_TASKS; ++i) {
+        p = task[i].task.PID;
+        if (p != pid) continue; // skip si no es el task que buscamos
+
+        // solo se le borra si no es que se esta ejecutando ahora mismo
+        // si se borra es pagefault.
+        if (p != current()->PID) list_del(&task[i].task.list); 
+        list_add_tail(&(task[i].task.list), &blockedqueue);
+        task[i].task.state = ST_BLOCKED;
+        return 1;
+    }
+
+    return ESRCH;
+}
+
+int sys_unblock(int pid) {
+    int p = 0;
+    for (int i = 0; i < NR_TASKS; ++i) {
+        p = task[i].task.PID;
+        if (p != pid) continue; // skip si no es el task que buscamos
+
+        if (p == current()->PID) return EINVAL;
+        list_del(&task[i].task.list);
+        list_add(&task[i].task.list, &readyqueue);
+        task[i].task.state = ST_READY;
+        return 1;
+    }
+
+    return ESRCH;
 }

@@ -26,6 +26,8 @@ void exit();
 
 int get_stats(int pid, struct stats *st);
 
-int get_stats(int pid, struct stats *st);
+int block(int pid);
+
+int unblock(int pid);
 
 #endif  /* __LIBC_H__ */

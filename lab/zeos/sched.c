@@ -18,7 +18,7 @@ struct task_struct *list_head_to_task_struct(struct list_head *l)
 }
 #endif
 
-extern struct list_head blocked;
+struct list_head blockedqueue;
 
 // HEAD de la freequeue
 struct list_head freequeue;
@@ -185,6 +185,7 @@ void init_sched()
 
     // Init ready queue (initially empty)
     INIT_LIST_HEAD( &readyqueue );
+    INIT_LIST_HEAD( &blockedqueue );
 }
 
 struct task_struct* current()
@@ -250,6 +251,7 @@ void sched_next_rr() {
 
     // Cambiar de cola el proceso a ejecutar (lo quitamos de cualquier cola)
     update_process_state_rr(next_process, NULL);
+    next_process->state = ST_RUN;
 
     // Seteamos el quantum de la siguiente ejecucion
     current_ticks_left = get_quantum(next_process);
@@ -301,8 +303,10 @@ void update_sched_data_rr() {
 void schedule() {
     update_sched_data_rr();
     if (needs_sched_rr()) {
-        if (current() != idle_task)
+        if (current() != idle_task || current()->state != ST_BLOCKED) {
             update_process_state_rr(current(), &readyqueue);
+            current()->state = ST_READY;
+        }
         sched_next_rr();
     }
 }
