@@ -301,3 +301,41 @@ unbl_no_err:
     leave
     ret
 
+ENTRY (get_map)
+    pushl %ebp
+    movl %esp, %ebp
+
+    pushl %ebx
+    pushl %edx
+    pushl %ecx
+
+    movl 8(%ebp), %ebx
+
+    movl $19, %eax // id de la syscall getpid() -> 17
+
+    pushl $gm_return_user // @ a la que sysenter debe devolver
+    pushl %ebp              // el ebp actual, que debera usarse al volver
+    movl %esp, %ebp
+
+    sysenter                // saltamos a la vigesima entrada de la sys_call_table
+gm_return_user:
+    popl %ebp
+    add $4, %esp // pop of return address. 
+
+    popl %ecx
+    popl %edx
+    popl %ebx
+
+    cmpl $0, %eax
+    jge gm_no_err
+
+    // Ha habido un error.
+    // Devolvemos -1 y ponemos el
+    // codigo de error en errno
+    neg %eax
+    movl %eax, errno
+    mov $-1, %eax
+
+gm_no_err:
+    leave
+    ret

@@ -34,6 +34,7 @@ SYSOBJ = \
 	sched.o \
 	sys.o \
 	mm.o \
+	examen.o \
 	devices.o \
 	utils.o \
 	hardware.o \

@@ -30,4 +30,6 @@ int block(int pid);
 
 int unblock(int pid);
 
+int get_map(void* logicalAddress);
+
 #endif  /* __LIBC_H__ */

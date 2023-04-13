@@ -61,6 +61,9 @@ int __attribute__ ((__section__(".text.main")))
         write(1, "W\n", 2);
     }
 
+    int phys = get_map(&buff);
+    if (phys > 0) write_msg_n_num("\n\nPHYSICAL ADDRESS OF BUFF: ", phys);
+
     int pid = fork();
     if (pid != 0) {
         block(pid);

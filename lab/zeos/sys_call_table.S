@@ -21,7 +21,7 @@ ENTRY (sys_call_table)
     .long sys_block         // 16
     .long sys_unblock       // 17
     .long sys_ni_syscall    // 18
-    .long sys_ni_syscall    // 19
+    .long sys_get_map       // 19
     .long sys_getpid        // 20
     .long sys_ni_syscall    // 21
     .long sys_ni_syscall    // 22

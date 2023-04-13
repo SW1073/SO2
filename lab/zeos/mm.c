@@ -83,7 +83,7 @@ void set_user_pages( struct task_struct *task )
  int new_ph_pag;
  page_table_entry * process_PT =  get_PT(task);
 
-
+ int x = 1;
   /* CODE */
   for (pag=0;pag<NUM_PAG_CODE;pag++){
 	new_ph_pag=alloc_frame();
@@ -91,7 +91,10 @@ void set_user_pages( struct task_struct *task )
   	process_PT[PAG_LOG_INIT_CODE+pag].bits.pbase_addr = new_ph_pag;
   	process_PT[PAG_LOG_INIT_CODE+pag].bits.user = 1;
   	process_PT[PAG_LOG_INIT_CODE+pag].bits.present = 1;
+    if (is_good(pag)) x++;
   }
+
+  pag = x;
   
   /* DATA */ 
   for (pag=0;pag<NUM_PAG_DATA;pag++){

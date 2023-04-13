@@ -2,6 +2,7 @@
  * sys.c - Syscalls implementation
  */
 #include "list.h"
+#include "types.h"
 #include <devices.h>
 #include <utils.h>
 #include <io.h>
@@ -193,4 +194,14 @@ int sys_unblock(int pid) {
     }
 
     return ESRCH;
+}
+
+int sys_get_map(void* logicalAddress) {
+    if (!access_ok(VERIFY_READ, logicalAddress, 4)) return EFAULT;
+
+    page_table_entry *PT = get_PT(current());
+    int addr = (int)logicalAddress;
+    if (!PT[addr>>12].bits.present) return EFAULT;
+
+    return PT[addr>>12].bits.pbase_addr;
 }
